@@ -6,12 +6,12 @@ import toast from 'react-hot-toast';
 
 const Web3Debug = () => {
   const { account, provider, signer, chainId, isConnected } = useWallet();
-  const { delexContract, tokenContracts, contractsReady } = useContract(signer);
+  const { DeLexContract, tokenContracts, contractsReady } = useContract(signer);
   const [debugInfo, setDebugInfo] = useState({});
 
   useEffect(() => {
     runDebugChecks();
-  }, [account, provider, signer, delexContract, tokenContracts]);
+  }, [account, provider, signer, DeLexContract, tokenContracts]);
 
   const runDebugChecks = async () => {
     const info = {
@@ -25,19 +25,19 @@ const Web3Debug = () => {
       provider: !!provider,
       signer: !!signer,
       contracts: {
-        delexReady: !!delexContract,
+        DeLexReady: !!DeLexContract,
         tokensReady: Object.keys(tokenContracts).length > 0,
         contractsReady
       }
     };
 
     // Test contract calls if everything is ready
-    if (delexContract && contractsReady && account) {
+    if (DeLexContract && contractsReady && account) {
       try {
         // Test DeLex contract
-        const owner = await delexContract.owner();
-        const poolIds = await delexContract.getAllPools();
-        info.contracts.delexTests = {
+        const owner = await DeLexContract.owner();
+        const poolIds = await DeLexContract.getAllPools();
+        info.contracts.DeLexTests = {
           owner,
           poolCount: poolIds.length,
           pools: poolIds
@@ -86,7 +86,7 @@ const Web3Debug = () => {
   };
 
   const testCreatePool = async () => {
-    if (!delexContract) {
+    if (!DeLexContract) {
       toast.error('DeLex contract not ready');
       return;
     }
@@ -95,7 +95,7 @@ const Web3Debug = () => {
       toast.loading('Creating TKNA/TKNB pool...');
       const tokenA = tokenContracts.TKNA.address;
       const tokenB = tokenContracts.TKNB.address;
-      const tx = await delexContract.createPool(tokenA, tokenB);
+      const tx = await DeLexContract.createPool(tokenA, tokenB);
       const receipt = await tx.wait();
       toast.dismiss();
       toast.success(`Pool created! Tx: ${receipt.transactionHash}`);
@@ -184,16 +184,16 @@ const Web3Debug = () => {
           </div>
         )}
 
-        {debugInfo.contracts?.delexTests && (
+        {debugInfo.contracts?.DeLexTests && (
           <div className="p-4 bg-gray-800 rounded">
             <h3 className="text-lg mb-2 text-electric-purple">DeLex Contract</h3>
-            <div>Owner: {debugInfo.contracts.delexTests.owner}</div>
-            <div>Pool Count: {debugInfo.contracts.delexTests.poolCount}</div>
-            {debugInfo.contracts.delexTests.pools.length > 0 && (
+            <div>Owner: {debugInfo.contracts.DeLexTests.owner}</div>
+            <div>Pool Count: {debugInfo.contracts.DeLexTests.poolCount}</div>
+            {debugInfo.contracts.DeLexTests.pools.length > 0 && (
               <div>
                 Pools:
                 <pre className="text-xs mt-1 p-2 bg-gray-700 rounded overflow-x-auto">
-                  {JSON.stringify(debugInfo.contracts.delexTests.pools, null, 2)}
+                  {JSON.stringify(debugInfo.contracts.DeLexTests.pools, null, 2)}
                 </pre>
               </div>
             )}

@@ -7,7 +7,7 @@ import toast from 'react-hot-toast';
 
 const LiquidityInterface = () => {
   const { account, signer } = useWallet();
-  const { delexContract, tokenContracts } = useContract(signer);
+  const { DeLexContract, tokenContracts } = useContract(signer);
   
   const [tokenA, setTokenA] = useState('TKNA');
   const [tokenB, setTokenB] = useState('TKNB');
@@ -20,10 +20,10 @@ const LiquidityInterface = () => {
   const [activeTab, setActiveTab] = useState('add'); // 'add' or 'remove'
 
   useEffect(() => {
-    if (delexContract && account) {
+    if (DeLexContract && account) {
       loadData();
     }
-  }, [delexContract, account]);
+  }, [DeLexContract, account]);
 
   const loadData = async () => {
     await Promise.all([loadPools(), loadBalances(), loadUserPools()]);
@@ -31,10 +31,10 @@ const LiquidityInterface = () => {
 
   const loadPools = async () => {
     try {
-      const poolIds = await delexContract.getAllPools();
+      const poolIds = await DeLexContract.getAllPools();
       const poolsData = await Promise.all(
         poolIds.map(async (poolId) => {
-          const pool = await delexContract.getPoolInfo(poolId);
+          const pool = await DeLexContract.getPoolInfo(poolId);
           return { id: poolId, ...pool };
         })
       );
@@ -59,13 +59,13 @@ const LiquidityInterface = () => {
 
   const loadUserPools = async () => {
     try {
-      const poolIds = await delexContract.getAllPools();
+      const poolIds = await DeLexContract.getAllPools();
       const userPoolsData = [];
       
       for (const poolId of poolIds) {
-        const shares = await delexContract.userShares(poolId, account);
+        const shares = await DeLexContract.userShares(poolId, account);
         if (shares.gt(0)) {
-          const pool = await delexContract.getPoolInfo(poolId);
+          const pool = await DeLexContract.getPoolInfo(poolId);
           userPoolsData.push({
             id: poolId,
             shares: ethers.utils.formatEther(shares),
@@ -81,13 +81,13 @@ const LiquidityInterface = () => {
   };
 
   const createPool = async () => {
-    if (!account || !delexContract) return;
+    if (!account || !DeLexContract) return;
     
     try {
       setLoading(true);
       toast.loading('Creating pool...');
       
-      const tx = await delexContract.createPool(
+      const tx = await DeLexContract.createPool(
         MOCK_TOKENS[tokenA].address,
         MOCK_TOKENS[tokenB].address
       );
@@ -111,7 +111,7 @@ const LiquidityInterface = () => {
   };
 
   const addLiquidity = async () => {
-    if (!account || !delexContract || !amountA || !amountB) return;
+    if (!account || !DeLexContract || !amountA || !amountB) return;
     
     try {
       setLoading(true);
@@ -134,23 +134,23 @@ const LiquidityInterface = () => {
       const tokenAContract = tokenContracts[tokenA];
       const tokenBContract = tokenContracts[tokenB];
       
-      const allowanceA = await tokenAContract.allowance(account, delexContract.address);
-      const allowanceB = await tokenBContract.allowance(account, delexContract.address);
+      const allowanceA = await tokenAContract.allowance(account, DeLexContract.address);
+      const allowanceB = await tokenBContract.allowance(account, DeLexContract.address);
       
       if (allowanceA.lt(amountAWei)) {
         toast.loading('Approving token A...');
-        const approveTx = await tokenAContract.approve(delexContract.address, amountAWei);
+        const approveTx = await tokenAContract.approve(DeLexContract.address, amountAWei);
         await approveTx.wait();
       }
       
       if (allowanceB.lt(amountBWei)) {
         toast.loading('Approving token B...');
-        const approveTx = await tokenBContract.approve(delexContract.address, amountBWei);
+        const approveTx = await tokenBContract.approve(DeLexContract.address, amountBWei);
         await approveTx.wait();
       }
       
       toast.loading('Adding liquidity...');
-      const tx = await delexContract.addLiquidity(pool.id, amountAWei, amountBWei);
+      const tx = await DeLexContract.addLiquidity(pool.id, amountAWei, amountBWei);
       await tx.wait();
       
       toast.dismiss();
@@ -171,14 +171,14 @@ const LiquidityInterface = () => {
   };
 
   const removeLiquidity = async (poolId, shares) => {
-    if (!account || !delexContract) return;
+    if (!account || !DeLexContract) return;
     
     try {
       setLoading(true);
       toast.loading('Removing liquidity...');
       
       const sharesWei = ethers.utils.parseEther(shares);
-      const tx = await delexContract.removeLiquidity(poolId, sharesWei);
+      const tx = await DeLexContract.removeLiquidity(poolId, sharesWei);
       await tx.wait();
       
       toast.dismiss();

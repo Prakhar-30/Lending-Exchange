@@ -11,10 +11,10 @@ const Header = () => {
   
   const navigation = [
     { name: 'Home', path: '/' },
+    { name: 'Pools', path: '/pools' },
     { name: 'Swap', path: '/swap' },
     { name: 'Liquidity', path: '/liquidity' },
-    { name: 'Lending', path: '/lending' },
-    { name: 'Debug', path: '/debug' } // Always show debug for testing
+    { name: 'Lending', path: '/lending' }
   ];
 
   const isWrongNetwork = chainId && chainId !== CHAIN_IDS.SEPOLIA;
@@ -52,10 +52,6 @@ const Header = () => {
                   }`}
                 >
                   {item.name}
-                  {/* Add debug indicator */}
-                  {item.path === '/debug' && (
-                    <span className="ml-1 text-xs text-laser-orange">🔧</span>
-                  )}
                 </Link>
               ))}
             </nav>
@@ -99,9 +95,6 @@ const Header = () => {
                   }`}
                 >
                   {item.name}
-                  {item.path === '/debug' && (
-                    <span className="ml-1 text-xs text-laser-orange">🔧</span>
-                  )}
                 </Link>
               ))}
               

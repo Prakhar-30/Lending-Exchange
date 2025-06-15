@@ -7,7 +7,7 @@ import toast from 'react-hot-toast';
 
 const LendingInterface = () => {
   const { account, signer } = useWallet();
-  const { delexContract, tokenContracts } = useContract(signer);
+  const { DeLexContract, tokenContracts } = useContract(signer);
   
   const [pools, setPools] = useState([]);
   const [userPositions, setUserPositions] = useState([]);
@@ -19,10 +19,10 @@ const LendingInterface = () => {
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
-    if (delexContract && account) {
+    if (DeLexContract && account) {
       loadData();
     }
-  }, [delexContract, account]);
+  }, [DeLexContract, account]);
 
   const loadData = async () => {
     await Promise.all([loadPools(), loadBalances(), loadUserPositions()]);
@@ -30,10 +30,10 @@ const LendingInterface = () => {
 
   const loadPools = async () => {
     try {
-      const poolIds = await delexContract.getAllPools();
+      const poolIds = await DeLexContract.getAllPools();
       const poolsData = await Promise.all(
         poolIds.map(async (poolId) => {
-          const pool = await delexContract.getPoolInfo(poolId);
+          const pool = await DeLexContract.getPoolInfo(poolId);
           return { id: poolId, ...pool };
         })
       );
@@ -61,12 +61,12 @@ const LendingInterface = () => {
 
   const loadUserPositions = async () => {
     try {
-      const poolIds = await delexContract.getAllPools();
+      const poolIds = await DeLexContract.getAllPools();
       const positions = [];
       
       for (const poolId of poolIds) {
-        const position = await delexContract.getUserPosition(account, poolId);
-        const pool = await delexContract.getPoolInfo(poolId);
+        const position = await DeLexContract.getUserPosition(account, poolId);
+        const pool = await DeLexContract.getPoolInfo(poolId);
         
         if (position.collateralA.gt(0) || position.collateralB.gt(0) || 
             position.borrowedA.gt(0) || position.borrowedB.gt(0)) {
@@ -85,7 +85,7 @@ const LendingInterface = () => {
   };
 
   const depositCollateral = async () => {
-    if (!account || !delexContract || !selectedPool || !amount) return;
+    if (!account || !DeLexContract || !selectedPool || !amount) return;
     
     try {
       setLoading(true);
@@ -94,16 +94,16 @@ const LendingInterface = () => {
       
       // Approve token
       const tokenContract = tokenContracts[selectedToken];
-      const allowance = await tokenContract.allowance(account, delexContract.address);
+      const allowance = await tokenContract.allowance(account, DeLexContract.address);
       
       if (allowance.lt(amountWei)) {
         toast.loading('Approving token...');
-        const approveTx = await tokenContract.approve(delexContract.address, amountWei);
+        const approveTx = await tokenContract.approve(DeLexContract.address, amountWei);
         await approveTx.wait();
       }
       
       toast.loading('Depositing collateral...');
-      const tx = await delexContract.depositCollateral(selectedPool.id, tokenAddress, amountWei);
+      const tx = await DeLexContract.depositCollateral(selectedPool.id, tokenAddress, amountWei);
       await tx.wait();
       
       toast.dismiss();
@@ -121,7 +121,7 @@ const LendingInterface = () => {
   };
 
   const borrowTokens = async () => {
-    if (!account || !delexContract || !selectedPool || !amount) return;
+    if (!account || !DeLexContract || !selectedPool || !amount) return;
     
     try {
       setLoading(true);
@@ -129,7 +129,7 @@ const LendingInterface = () => {
       const tokenAddress = MOCK_TOKENS[selectedToken].address;
       
       toast.loading('Borrowing tokens...');
-      const tx = await delexContract.borrow(selectedPool.id, tokenAddress, amountWei);
+      const tx = await DeLexContract.borrow(selectedPool.id, tokenAddress, amountWei);
       await tx.wait();
       
       toast.dismiss();
@@ -147,7 +147,7 @@ const LendingInterface = () => {
   };
 
   const repayTokens = async () => {
-    if (!account || !delexContract || !selectedPool || !amount) return;
+    if (!account || !DeLexContract || !selectedPool || !amount) return;
     
     try {
       setLoading(true);
@@ -156,16 +156,16 @@ const LendingInterface = () => {
       
       // Approve token
       const tokenContract = tokenContracts[selectedToken];
-      const allowance = await tokenContract.allowance(account, delexContract.address);
+      const allowance = await tokenContract.allowance(account, DeLexContract.address);
       
       if (allowance.lt(amountWei)) {
         toast.loading('Approving token...');
-        const approveTx = await tokenContract.approve(delexContract.address, amountWei);
+        const approveTx = await tokenContract.approve(DeLexContract.address, amountWei);
         await approveTx.wait();
       }
       
       toast.loading('Repaying tokens...');
-      const tx = await delexContract.repay(selectedPool.id, tokenAddress, amountWei);
+      const tx = await DeLexContract.repay(selectedPool.id, tokenAddress, amountWei);
       await tx.wait();
       
       toast.dismiss();
@@ -183,14 +183,14 @@ const LendingInterface = () => {
   };
 
   const withdrawCollateral = async (poolId, tokenAddress, amount) => {
-    if (!account || !delexContract) return;
+    if (!account || !DeLexContract) return;
     
     try {
       setLoading(true);
       const amountWei = ethers.utils.parseEther(amount);
       
       toast.loading('Withdrawing collateral...');
-      const tx = await delexContract.withdrawCollateral(poolId, tokenAddress, amountWei);
+      const tx = await DeLexContract.withdrawCollateral(poolId, tokenAddress, amountWei);
       await tx.wait();
       
       toast.dismiss();

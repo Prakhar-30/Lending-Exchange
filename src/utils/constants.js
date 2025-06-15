@@ -34,7 +34,7 @@ export const CHAIN_IDS = {
 
 // Contract deployment info
 export const CONTRACT_INFO = {
-  DELEX_CORE: {
+  DeLex_CORE: {
     address: "0x27cc171d68B20BBE3E81B009F337b17b06196f82",
     deployedBlock: null // Add block number when you know it
   },

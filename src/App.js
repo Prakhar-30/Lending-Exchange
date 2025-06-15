@@ -6,7 +6,7 @@ import Home from './pages/Home';
 import Swap from './pages/Swap';
 import Liquidity from './pages/Liquidity';
 import Lending from './pages/Lending';
-import Debug from './pages/Debug';
+import Pools from './pages/Pools';
 
 function App() {
   return (
@@ -16,11 +16,10 @@ function App() {
         <main>
           <Routes>
             <Route path="/" element={<Home />} />
+            <Route path="/pools" element={<Pools />} />
             <Route path="/swap" element={<Swap />} />
             <Route path="/liquidity" element={<Liquidity />} />
             <Route path="/lending" element={<Lending />} />
-            {/* Debug route - available in all environments for testing */}
-            <Route path="/debug" element={<Debug />} />
           </Routes>
         </main>
         

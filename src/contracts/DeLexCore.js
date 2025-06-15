@@ -1,6 +1,6 @@
-export const DELEX_CORE_ADDRESS = "0x27cc171d68B20BBE3E81B009F337b17b06196f82";
+export const DeLex_CORE_ADDRESS = "0x27cc171d68B20BBE3E81B009F337b17b06196f82";
 
-export const DELEX_CORE_ABI = [
+export const DeLex_CORE_ABI = [
 	{
 		"inputs": [
 			{

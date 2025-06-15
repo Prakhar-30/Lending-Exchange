@@ -1,10 +1,10 @@
 import { useState, useEffect } from 'react';
 import { ethers } from 'ethers';
-import { DELEX_CORE_ADDRESS, DELEX_CORE_ABI } from '../contracts/DeLexCore';
+import { DeLex_CORE_ADDRESS, DeLex_CORE_ABI } from '../contracts/DeLexCore';
 import { MOCK_TOKENS, MOCK_TOKEN_ABI } from '../contracts/MockToken';
 
 export const useContract = (signer) => {
-  const [delexContract, setDelexContract] = useState(null);
+  const [DeLexContract, setDeLexContract] = useState(null);
   const [tokenContracts, setTokenContracts] = useState({});
   const [contractsReady, setContractsReady] = useState(false);
 
@@ -13,7 +13,7 @@ export const useContract = (signer) => {
       initializeContracts();
     } else {
       // Clear contracts when no signer
-      setDelexContract(null);
+      setDeLexContract(null);
       setTokenContracts({});
       setContractsReady(false);
     }
@@ -28,19 +28,19 @@ export const useContract = (signer) => {
       console.log('Signer address:', signerAddress);
 
       // Initialize DeLex contract
-      console.log('Creating DeLex contract with address:', DELEX_CORE_ADDRESS);
-      const delex = new ethers.Contract(DELEX_CORE_ADDRESS, DELEX_CORE_ABI, signer);
+      console.log('Creating DeLex contract with address:', DeLex_CORE_ADDRESS);
+      const DeLex = new ethers.Contract(DeLex_CORE_ADDRESS, DeLex_CORE_ABI, signer);
       
       // Test contract connection
       try {
-        const owner = await delex.owner();
+        const owner = await DeLex.owner();
         console.log('DeLex contract connected. Owner:', owner);
       } catch (error) {
         console.error('Error testing DeLex contract:', error);
         throw new Error(`Failed to connect to DeLex contract: ${error.message}`);
       }
 
-      setDelexContract(delex);
+      setDeLexContract(DeLex);
 
       // Initialize token contracts
       const tokens = {};
@@ -74,7 +74,7 @@ export const useContract = (signer) => {
       
     } catch (error) {
       console.error('Error initializing contracts:', error);
-      setDelexContract(null);
+      setDeLexContract(null);
       setTokenContracts({});
       setContractsReady(false);
       
@@ -108,7 +108,7 @@ export const useContract = (signer) => {
   };
 
   return { 
-    delexContract, 
+    DeLexContract, 
     tokenContracts, 
     contractsReady,
     checkContractReady,
