@@ -1,19 +1,45 @@
 import React from 'react';
 import { useWallet } from '../hooks/useWallet';
+import { CHAIN_IDS } from '../utils/constants';
 
 const WalletConnect = () => {
-  const { account, loading, connectWallet, disconnectWallet } = useWallet();
+  const { account, loading, connectWallet, disconnectWallet, chainId, isConnected } = useWallet();
 
   const formatAddress = (address) => {
     return `${address.slice(0, 6)}...${address.slice(-4)}`;
   };
 
+  const getNetworkName = (chainId) => {
+    switch (chainId) {
+      case CHAIN_IDS.SEPOLIA:
+        return 'Sepolia';
+      case CHAIN_IDS.MAINNET:
+        return 'Mainnet';
+      case CHAIN_IDS.GOERLI:
+        return 'Goerli';
+      default:
+        return `Chain ${chainId}`;
+    }
+  };
+
+  const isWrongNetwork = chainId && chainId !== CHAIN_IDS.SEPOLIA;
+
   return (
     <div className="flex items-center">
       {account ? (
         <div className="flex items-center space-x-4">
-          <div className="text-cyber-blue font-cyber text-sm">
-            {formatAddress(account)}
+          <div className="flex flex-col items-end">
+            <div className="text-cyber-blue font-cyber text-sm">
+              {formatAddress(account)}
+            </div>
+            {chainId && (
+              <div className={`text-xs font-cyber ${
+                isWrongNetwork ? 'text-red-400' : 'text-gray-400'
+              }`}>
+                {getNetworkName(chainId)}
+                {isWrongNetwork && ' (Wrong Network)'}
+              </div>
+            )}
           </div>
           <button
             onClick={disconnectWallet}
@@ -30,6 +56,14 @@ const WalletConnect = () => {
         >
           {loading ? 'Connecting...' : 'Connect Wallet'}
         </button>
+      )}
+      
+      {/* Debug info - remove in production */}
+      {process.env.NODE_ENV === 'development' && isConnected && (
+        <div className="ml-4 text-xs text-gray-500">
+          <div>Connected: {isConnected ? '✅' : '❌'}</div>
+          <div>Chain: {chainId}</div>
+        </div>
       )}
     </div>
   );

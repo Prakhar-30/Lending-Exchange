@@ -194,7 +194,7 @@ const LendingInterface = () => {
       await tx.wait();
       
       toast.dismiss();
-      toast.success('Collateral withdrew successfully!');
+      toast.success('Collateral withdrawn successfully!');
       
       loadData();
     } catch (error) {
@@ -220,6 +220,11 @@ const LendingInterface = () => {
     
     const healthFactor = (collateralValue * 0.75) / borrowValue;
     return healthFactor.toFixed(2);
+  };
+
+  const formatAmount = (amount) => {
+    const formatted = parseFloat(ethers.utils.formatEther(amount));
+    return formatted > 0 ? formatted.toFixed(4) : '0';
   };
 
   return (
@@ -254,7 +259,7 @@ const LendingInterface = () => {
               : 'bg-gray-800 text-gray-300 hover:bg-gray-700'
           }`}
         >
-          Repay & Positions
+          Repay
         </button>
       </div>
 
@@ -355,45 +360,61 @@ const LendingInterface = () => {
                     </div>
                   </div>
                   
-                  {/* Collateral */}
+                  {/* Collateral - Fixed Colors */}
                   <div className="mb-3">
                     <div className="text-neon-green text-sm font-cyber mb-1">Collateral:</div>
                     {position.collateralA.gt(0) && (
-                      <div className="flex justify-between items-center text-xs">
-                        <span>{getTokenSymbol(position.pool.tokenA)}: {ethers.utils.formatEther(position.collateralA)}</span>
+                      <div className="flex justify-between items-center text-xs mb-1">
+                        <span className="text-neon-green">
+                          {getTokenSymbol(position.pool.tokenA)}: {formatAmount(position.collateralA)}
+                        </span>
                         <button
-                          onClick={() => withdrawCollateral(position.poolId, position.pool.tokenA, ethers.utils.formatEther(position.collateralA))}
-                          className="px-2 py-1 bg-laser-orange text-black rounded text-xs hover:bg-opacity-80"
+                          onClick={() => withdrawCollateral(position.poolId, position.pool.tokenA, formatAmount(position.collateralA))}
+                          disabled={loading}
+                          className="px-2 py-1 bg-laser-orange text-black rounded text-xs hover:bg-opacity-80 disabled:opacity-50"
                         >
                           Withdraw
                         </button>
                       </div>
                     )}
                     {position.collateralB.gt(0) && (
-                      <div className="flex justify-between items-center text-xs">
-                        <span>{getTokenSymbol(position.pool.tokenB)}: {ethers.utils.formatEther(position.collateralB)}</span>
+                      <div className="flex justify-between items-center text-xs mb-1">
+                        <span className="text-neon-green">
+                          {getTokenSymbol(position.pool.tokenB)}: {formatAmount(position.collateralB)}
+                        </span>
                         <button
-                          onClick={() => withdrawCollateral(position.poolId, position.pool.tokenB, ethers.utils.formatEther(position.collateralB))}
-                          className="px-2 py-1 bg-laser-orange text-black rounded text-xs hover:bg-opacity-80"
+                          onClick={() => withdrawCollateral(position.poolId, position.pool.tokenB, formatAmount(position.collateralB))}
+                          disabled={loading}
+                          className="px-2 py-1 bg-laser-orange text-black rounded text-xs hover:bg-opacity-80 disabled:opacity-50"
                         >
                           Withdraw
                         </button>
                       </div>
                     )}
+                    {position.collateralA.eq(0) && position.collateralB.eq(0) && (
+                      <div className="text-gray-500 text-xs">No collateral deposited</div>
+                    )}
                   </div>
                   
-                  {/* Borrowed */}
+                  {/* Borrowed - Fixed Colors */}
                   <div>
                     <div className="text-hot-pink text-sm font-cyber mb-1">Borrowed:</div>
                     {position.borrowedA.gt(0) && (
-                      <div className="text-xs">
-                        {getTokenSymbol(position.pool.tokenA)}: {ethers.utils.formatEther(position.borrowedA)}
+                      <div className="text-xs mb-1">
+                        <span className="text-hot-pink">
+                          {getTokenSymbol(position.pool.tokenA)}: {formatAmount(position.borrowedA)}
+                        </span>
                       </div>
                     )}
                     {position.borrowedB.gt(0) && (
-                      <div className="text-xs">
-                        {getTokenSymbol(position.pool.tokenB)}: {ethers.utils.formatEther(position.borrowedB)}
+                      <div className="text-xs mb-1">
+                        <span className="text-hot-pink">
+                          {getTokenSymbol(position.pool.tokenB)}: {formatAmount(position.borrowedB)}
+                        </span>
                       </div>
+                    )}
+                    {position.borrowedA.eq(0) && position.borrowedB.eq(0) && (
+                      <div className="text-gray-500 text-xs">No tokens borrowed</div>
                     )}
                   </div>
                 </div>

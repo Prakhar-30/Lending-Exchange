@@ -6,6 +6,7 @@ import Home from './pages/Home';
 import Swap from './pages/Swap';
 import Liquidity from './pages/Liquidity';
 import Lending from './pages/Lending';
+import Debug from './pages/Debug';
 
 function App() {
   return (
@@ -18,6 +19,8 @@ function App() {
             <Route path="/swap" element={<Swap />} />
             <Route path="/liquidity" element={<Liquidity />} />
             <Route path="/lending" element={<Lending />} />
+            {/* Debug route - available in all environments for testing */}
+            <Route path="/debug" element={<Debug />} />
           </Routes>
         </main>
         
@@ -30,6 +33,27 @@ function App() {
               color: '#00f5ff',
               border: '1px solid #00f5ff',
               fontFamily: 'Orbitron, monospace',
+            },
+            success: {
+              style: {
+                background: '#000',
+                color: '#39ff14',
+                border: '1px solid #39ff14',
+              },
+            },
+            error: {
+              style: {
+                background: '#000',
+                color: '#ff1493',
+                border: '1px solid #ff1493',
+              },
+            },
+            loading: {
+              style: {
+                background: '#000',
+                color: '#bf00ff',
+                border: '1px solid #bf00ff',
+              },
             },
           }}
         />
